@@ -278,8 +278,10 @@ class MuseClient:
                 f"has_hatch_access={onboarding.get('has_hatch_access')} "
                 f"waitlist_status={onboarding.get('waitlist_status')}"
             )
-        if onboarding["state"] != "disclosure":
-            raise MuseError(f"disclosure_context_unresolved ({onboarding.get('reason')})")
+        if onboarding["state"] not in ("disclosure", "active"):
+            raise MuseError(
+                f"disclosure_context_unresolved ({onboarding.get('reason')})"
+            )
         onboarding["source_url"] = urlunsplit(("https", final.hostname, final.path or "/", "", ""))
         self.onboarding = onboarding
         return onboarding
@@ -445,10 +447,36 @@ def parse_onboarding(html):
             disclosures.append((obj.get("disclosureText"), obj.get("disclosureVersion")))
     if states:
         if len({json.dumps(s, sort_keys=True) for s in states}) > 1:
-            return {"state": "unresolved", "reason": "onboarding_state_conflict"}
-        if (states[0]["resolved_destination"] == "waitlist"
-                or states[0]["is_geo_gated"] is True):
-            return {"state": "waitlist", "reason": "onboarding_waitlist", **states[0]}
+            return {
+                "state": "unresolved",
+                "reason": "onboarding_state_conflict",
+            }
+
+        current = states[0]
+
+        if (
+            current["resolved_destination"] == "waitlist"
+            or current["is_geo_gated"] is True
+        ):
+            return {
+                "state": "waitlist",
+                "reason": "onboarding_waitlist",
+                **current,
+            }
+
+        # Una cuenta que ya pasó onboarding puede aterrizar
+        # directamente en main_app y no volver a traer disclosure.
+        if (
+            current["resolved_destination"] == "main_app"
+            and current["has_hatch_access"] is True
+            and not disclosures
+        ):
+            return {
+                "state": "active",
+                "reason": "already_active",
+                **current,
+            }
+
     texts = list(dict.fromkeys(t for t, _ in disclosures
                                if isinstance(t, str) and t.strip()))
     versions = list(dict.fromkeys(v for _, v in disclosures
