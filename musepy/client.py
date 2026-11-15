@@ -251,7 +251,13 @@ class MuseClient:
             raise MuseError(f"activate_session 最终落在非 muse.ai 域（{final.hostname}）")
         onboarding = parse_onboarding(r.text)
         if onboarding["state"] == "waitlist":
-            raise MuseError("region_waitlist")
+            raise MuseError(
+                "region_waitlist "
+                f"resolved_destination={onboarding.get('resolved_destination')} "
+                f"is_geo_gated={onboarding.get('is_geo_gated')} "
+                f"has_hatch_access={onboarding.get('has_hatch_access')} "
+                f"waitlist_status={onboarding.get('waitlist_status')}"
+            )
         if onboarding["state"] != "disclosure":
             raise MuseError(f"disclosure_context_unresolved ({onboarding.get('reason')})")
         onboarding["source_url"] = urlunsplit(("https", final.hostname, final.path or "/", "", ""))
