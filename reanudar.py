@@ -1,3 +1,4 @@
+import json
 from musepy.client import MuseClient, MuseError
 
 INVITE_CODE = "C5OF8S"
@@ -62,7 +63,8 @@ try:
     print("[4] Confirmando OTP...")
     confirm = c.confirm_otp(otp)
 
-    print("Confirmación:", resumen(confirm))
+    print("\nRESPUESTA COMPLETA CONFIRM-OTP:")
+    print(json.dumps(confirm, indent=2, ensure_ascii=False))
 
     # Algunas variantes de login pueden entregar directamente
     # auth_meta_session después del OTP.
