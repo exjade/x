@@ -10,7 +10,7 @@ date_of_birth = input("Fecha de nacimiento (YYYY-MM-DD): ").strip()
 c = MuseClient(
     proxy=None,
     impersonate="chrome142",
-    lang="es-MX",
+    lang="ja",
     timeout=30,
 )
 
