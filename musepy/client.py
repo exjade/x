@@ -249,6 +249,18 @@ class MuseClient:
         final = urlsplit(url)
         if final.hostname != "muse.ai":
             raise MuseError(f"activate_session 最终落在非 muse.ai 域（{final.hostname}）")
+            final_path = final.path or "/"
+
+            print(f"[bootstrap] final_path = {final_path}")
+            print(f"[bootstrap] disclosureText = {'disclosureText' in r.text}")
+            print(f"[bootstrap] disclosureVersion = {'disclosureVersion' in r.text}")
+            print(f"[bootstrap] access_verification = {'/access/verification' in r.text}")
+
+            if (
+                final_path.startswith("/access/verification")
+                or "/access/verification" in r.text
+            ):
+                raise MuseError("age_verification_required")
         onboarding = parse_onboarding(r.text)
         if onboarding["state"] == "waitlist":
             raise MuseError(
