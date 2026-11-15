@@ -1,0 +1,20 @@
+{
+  "email": "your-mailbox@example.com",
+  "proxy": "http://user:pass@host:port",
+  "invite_code": "",
+  "lang": "ja",
+  "impersonate": "chrome142",
+  "first_name": "三郎",
+  "last_name": "近藤",
+  "date_of_birth": "1993-11-14",
+  "send_caa": true,
+  "send_falco": true,
+  "otp_file": "otp-urls.txt",
+  "proxy_file": "proxies.txt",
+  "codes_file": "codes.txt",
+  "output_dir": "output",
+  "tried_file": "tried_emails.txt",
+  "workers": 5,
+  "max_per_ip": 6,
+  "resolve_ip": true
+}
