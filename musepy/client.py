@@ -247,20 +247,28 @@ class MuseClient:
         if r.status_code != 200:
             raise MuseError(f"activate_session 引导失败 {r.status_code}: {r.text[:120]}")
         final = urlsplit(url)
+
         if final.hostname != "muse.ai":
-            raise MuseError(f"activate_session 最终落在非 muse.ai 域（{final.hostname}）")
-            final_path = final.path or "/"
+            raise MuseError(
+                f"activate_session 最终落在非 muse.ai 域（{final.hostname}）"
+            )
 
-            print(f"[bootstrap] final_path = {final_path}")
-            print(f"[bootstrap] disclosureText = {'disclosureText' in r.text}")
-            print(f"[bootstrap] disclosureVersion = {'disclosureVersion' in r.text}")
-            print(f"[bootstrap] access_verification = {'/access/verification' in r.text}")
+        final_path = final.path or "/"
 
-            if (
-                final_path.startswith("/access/verification")
-                or "/access/verification" in r.text
-            ):
-                raise MuseError("age_verification_required")
+        has_disclosure_text = "disclosureText" in r.text
+        has_disclosure_version = "disclosureVersion" in r.text
+        has_access_verification = "/access/verification" in r.text
+
+        print(f"[bootstrap] final_path = {final_path}")
+        print(f"[bootstrap] disclosureText = {has_disclosure_text}")
+        print(f"[bootstrap] disclosureVersion = {has_disclosure_version}")
+        print(f"[bootstrap] access_verification = {has_access_verification}")
+
+        if (
+            final_path.startswith("/access/verification")
+            or has_access_verification
+        ):
+            raise MuseError("age_verification_required")
         onboarding = parse_onboarding(r.text)
         if onboarding["state"] == "waitlist":
             raise MuseError(
