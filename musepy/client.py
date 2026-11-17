@@ -66,7 +66,7 @@ class MuseError(RuntimeError):
 class MuseClient:
     """一个账号 = 一个 Session（一个出口 IP）"""
 
-    def __init__(self, proxy=None, impersonate="chrome142", lang="es-MX", timeout=30):
+    def __init__(self, proxy=None, impersonate="chrome142", lang="en-US", timeout=30):
         self.fp = impersonate
         self.lang = lang
         self.proxy = proxy

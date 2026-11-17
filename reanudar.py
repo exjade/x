@@ -20,7 +20,7 @@ email = input("Correo de la cuenta existente: ").strip()
 c = MuseClient(
     proxy=None,
     impersonate="chrome142",
-    lang="ja",
+    lang="en-US",
     timeout=30,
 )
 
